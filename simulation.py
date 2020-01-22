@@ -22,6 +22,21 @@ class Simulation(Env):
         self.last_astroid = utils.get_now()
         self.now = utils.get_now()
         self.score = 0
+        self.stars = []
+        self.add_stars()
+
+    def add_stars(self):
+        for i in range(100):
+            x = random.randint(1, config.SCREEN_WIDTH - 2)
+            y = random.randint(1, config.SCREEN_HEIGHT - 2)
+            brightness = random.randint(120, 255)
+            self.stars.append((x, y, brightness))
+
+    def draw_stars(self):
+        for x, y, brightness in self.stars:
+            self.frame[y, x - 1:x + 1] = int(brightness * 0.5)
+            self.frame[y - 1:y + 1, x] = int(brightness * 0.5)
+            self.frame[y, x] = brightness
 
     def run(self):
         assert config.DRAW
@@ -40,7 +55,9 @@ class Simulation(Env):
         done = False
         if action == 32:
             self.bullets += self.ship.shoot()
-        self.frame.fill(0)
+        if config.DRAW:
+            self.frame.fill(0)
+            self.draw_stars()
         self.ship.tick(action, self.frame)
         for asteroid in self.asteroids:
             self.frame = asteroid.tick(self.frame)
@@ -58,7 +75,7 @@ class Simulation(Env):
             self.frame = bullet.tick(self.frame)
             if bullet.remove():
                 self.bullets.remove(bullet)
-        if config.DRAW:
+        if config.RENDER:
             cv2.imshow("space", self.frame)
             cv2.waitKey(1)
 

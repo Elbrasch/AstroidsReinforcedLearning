@@ -2,3 +2,4 @@ imutils
 numpy
 cv2
 gym
+matplotlib

@@ -1,24 +1,31 @@
 import random
 
-keys = [0, 119, 97, 115, 100, 32]
-
 
 class RotateShoot:
-    def __init__(self):
+    def __init__(self, actionspace):
         self.rotate = True
+        self.actionspace = actionspace
 
     def react(self, state):
+        self.rotate = not self.rotate
         if self.rotate:
-            self.rotate = False
-            return keys[2]
+            return self.actionspace[2]
         else:
-            self.rotate = True
-            return keys[5]
+            return self.actionspace[5]
 
 
 class RandomDevil:
+    def __init__(self, actionspace, pause=1):
+        self.actionspace = actionspace
+        self.pause = pause
+        self.tick_counter = 0
+
     def react(self, state):
-        return keys[random.randint(0, len(keys) - 1)]
+        self.tick_counter += 1
+        if self.tick_counter < self.pause:
+            return -1
+        self.tick_counter = 0
+        return self.actionspace[random.randint(0, len(self.actionspace) - 1)]
 
 
 if __name__ == "__main__":
@@ -27,11 +34,12 @@ if __name__ == "__main__":
     import numpy as np
 
     config.DRAW = False
+    config.RENDER = False
     config.use_ticks = True
     scores = []
     sim = Simulation()
     for i in range(100):
-        ai = RandomDevil()
+        ai = RandomDevil(sim.action_space)
         while True:
             key = ai.react(sim)
             ret = sim.step(key)

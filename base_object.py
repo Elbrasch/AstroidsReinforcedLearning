@@ -1,7 +1,7 @@
 import cv2
 import imutils
 import math
-from config import DRAW
+import config
 from functools import lru_cache
 
 
@@ -32,8 +32,8 @@ class BaseObject:
             raise Exception("No filename or image defined")
 
     def move(self):
-        self.x += self.vx
-        self.y += self.vy
+        self.x += (60 / config.fps) * self.vx
+        self.y += (60 / config.fps) * self.vy
 
     def distance(self, x, y):
         return math.sqrt((self.x - x) ** 2 + (self.y - y) ** 2)
@@ -49,7 +49,7 @@ class BaseObject:
             self.y = 0
 
     def draw(self, img):
-        if not DRAW:
+        if not config.DRAW:
             return img
         x = int(self.x)
         y = int(self.y)
